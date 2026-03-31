@@ -38,13 +38,13 @@
 | Remote Control | [远程控制](analysis/zh/remote-control.md) | [Remote Control](analysis/en/remote-control.md) |
 | Future Roadmap | [未来路线图](analysis/zh/roadmap.md) | [Roadmap](analysis/en/roadmap.md) |
 
-### Comparison (Coming Soon)
+### Comparison
 
 | Document | Description |
 |----------|-------------|
-| [vs Cursor](comparison/vs-cursor.md) | Architecture-level comparison |
-| [vs Cline](comparison/vs-cline.md) | Open-source alternative analysis |
-| [Feature Matrix](comparison/feature-matrix.md) | Side-by-side capability table |
+| [vs Cursor](comparison/vs-cursor.md) | Architecture-level comparison with the AI-native IDE |
+| [vs Cline](comparison/vs-cline.md) | How the open-source alternative stacks up |
+| [Feature Matrix](comparison/feature-matrix.md) | Side-by-side capability table across all three tools |
 
 ---
 
@@ -97,12 +97,25 @@ This project focuses on **original analysis with source citations** — every cl
 
 ---
 
+## Accuracy & Methodology
+
+This analysis is based on **static source code reading** of Claude Code v2.1.88. Key limitations:
+
+- All findings come from reading `.ts`/`.tsx` files — **no code was executed or tested at runtime**
+- Numeric constants (prices, thresholds, buffer sizes) are verified against source with file paths and line numbers
+- Architecture diagrams are simplified representations — actual control flow may have edge cases not captured
+- Feature maturity assessments use verifiable metrics (file count, line count, cross-file references) rather than subjective percentages
+- The comparison section uses publicly available documentation for Cursor and Cline; their internals may differ from what's documented
+
+**If you find an error, please open an issue with the source file and line number.** Corrections are welcome and encouraged.
+
 ## Disclaimer
 
-- This project is **NOT affiliated with Anthropic**
+- This project is **NOT affiliated with, endorsed by, or maintained by Anthropic**
 - All original source code is Anthropic's intellectual property
 - Analysis is for **educational and security research purposes only**
-- No proprietary source code is redistributed in this repository
+- **No proprietary source code is redistributed** in this repository — all content is original analysis
+- Feature roadmap speculation is based on code evidence, not insider knowledge
 
 ---
 

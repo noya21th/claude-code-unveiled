@@ -38,13 +38,13 @@
 | 远程控制与紧急开关 | [分析](analysis/zh/remote-control.md) | [Analysis](analysis/en/remote-control.md) |
 | 未来路线图 | [分析](analysis/zh/roadmap.md) | [Analysis](analysis/en/roadmap.md) |
 
-### 横向对比（即将推出）
+### 横向对比
 
 | 文档 | 说明 |
 |------|------|
-| [vs Cursor](comparison/vs-cursor.md) | 架构级对比 |
-| [vs Cline](comparison/vs-cline.md) | 开源替代方案分析 |
-| [功能矩阵](comparison/feature-matrix.md) | 逐项能力对照表 |
+| [vs Cursor](comparison/vs-cursor.md) | 与 AI 原生 IDE 的架构级对比 |
+| [vs Cline](comparison/vs-cline.md) | 开源替代方案深度分析 |
+| [功能矩阵](comparison/feature-matrix.md) | 三款工具逐项能力对照表 |
 
 ---
 
@@ -98,12 +98,25 @@ Override > Coordinator > Agent > Custom > Default + Append
 
 ---
 
+## 准确性与方法论
+
+本分析基于 Claude Code v2.1.88 的**静态源码阅读**。主要局限:
+
+- 所有发现来自阅读 `.ts`/`.tsx` 文件 — **未执行或运行时测试任何代码**
+- 数字常量（价格、阈值、缓冲区大小）已通过源码文件路径和行号验证
+- 架构图是简化表示 — 实际控制流可能有未捕获的边界情况
+- 功能成熟度评估使用可验证指标（文件数、代码行数、跨文件引用数），而非主观百分比
+- 对比分析中 Cursor 和 Cline 的信息基于公开文档，其内部实现可能有差异
+
+**如果发现错误，请提 Issue 并附上源文件和行号。** 欢迎纠正。
+
 ## 免责声明
 
-- 本项目**与 Anthropic 无关**
+- 本项目**与 Anthropic 无关，未获其认可或维护**
 - 所有原始源代码为 Anthropic 的知识产权
 - 分析仅用于**教育和安全研究目的**
-- 本仓库**不重新分发**任何专有源代码
+- 本仓库**不重新分发**任何专有源代码 — 所有内容为原创分析
+- 功能路线图推测基于代码证据，非内部消息
 
 ---
 

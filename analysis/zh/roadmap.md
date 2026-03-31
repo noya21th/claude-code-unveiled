@@ -1,128 +1,101 @@
 # 未来路线图
 
-> 从 87 个 feature flags 和缺失模块中推测 Claude Code 的发展方向。
+> 从 87 个 feature flags 和缺失模块中推测 Claude Code 的发展方向。所有判断基于代码量和跨文件引用数等可验证指标。
 
 ---
 
-## 功能成熟度图谱
+## 功能成熟度评估方法
 
-```mermaid
-quadrantChart
-    title 功能成熟度 vs 用户价值
-    x-axis 低成熟度 --> 高成熟度
-    y-axis 低价值 --> 高价值
-    quadrant-1 即将发布
-    quadrant-2 长期愿景
-    quadrant-3 内部工具
-    quadrant-4 已在使用
+本文使用以下可验证指标评估功能成熟度，而非主观百分比:
 
-    KAIROS: [0.85, 0.9]
-    Voice Mode: [0.75, 0.7]
-    Buddy: [0.65, 0.5]
-    UltraPlan: [0.6, 0.8]
-    UltraThink: [0.6, 0.85]
-    Web Browser: [0.55, 0.7]
-    Coordinator: [0.45, 0.8]
-    Agent Triggers: [0.4, 0.75]
-    Torch: [0.5, 0.6]
-    Memory Extract: [0.35, 0.65]
-    Templates: [0.3, 0.5]
-```
+| 指标 | 说明 |
+|------|------|
+| 专属文件数 | 该功能目录下的源文件数量 |
+| 代码行数 | 专属模块的代码量 |
+| 跨文件引用数 | 其他文件中引用该功能的文件数量 |
+| 基础设施证据 | 是否有跨平台二进制、配置 schema、GrowthBook 门控等 |
 
 ---
 
-## Tier 1: 即将发布（成熟度 80%+）
+## Tier 1: 深度集成（引用 100+ 文件）
 
 ### KAIROS — 自主助手平台
 
 **这是 Claude Code 最大的未发布功能。**
 
-| 子系统 | 说明 | 成熟度 |
-|--------|------|--------|
-| Assistant Mode | 助手交互模式 | 95% |
-| Brief Tool | 消息检查点/简报 | 90% |
-| Channels | 频道系统（MCP 集成） | 85% |
-| Cron Tasks | 定时任务调度 | 85% |
-| GitHub Webhooks | PR 订阅和通知 | 80% |
-| Push Notifications | 推送通知 | 75% |
-| Dream | 记忆整合（离线学习） | 70% |
+| 指标 | 数据 |
+|------|------|
+| 跨文件引用 | **210 个文件**（全代码库最高） |
+| 专属模块 | `src/assistant/`, `src/tools/BriefTool/` |
+| 代码行数 | 专属 597 行 + 大量散布在其他模块中 |
+| GrowthBook 门控 | `tengu_kairos`, `tengu_kairos_cron_config`, `tengu_kairos_brief` |
+| 子系统 | Assistant Mode, Brief Tool, Channels, Cron Tasks, GitHub Webhooks, Push Notifications, Dream |
 
-**预测**: KAIROS 将成为 Claude Code 从"编码工具"到"自主开发伙伴"的转型核心。
+**判断依据**: 210 个文件引用意味着 KAIROS 已深度嵌入核心架构，不是独立实验。
 
 ### Voice Mode — 语音交互
 
-| 组件 | 说明 |
+| 指标 | 数据 |
 |------|------|
-| Voice STT | 语音转文本 |
-| Audio Capture | 原生音频采集（跨平台 .node 模块） |
-| Voice Integration Hook | React 集成 |
+| 跨文件引用 | **38 个文件** |
+| 专属模块 | `src/voice/` |
+| 跨平台二进制 | `vendor/audio-capture/` 含 6 个平台的 .node 文件 |
+| 组件 | voiceStreamSTT, useVoiceIntegration |
 
-**证据**: `vendor/audio-capture/` 包含 6 个平台的原生二进制文件（arm64/x64 × darwin/linux/win32），说明已进入跨平台测试阶段。
-
----
-
-## Tier 2: 积极开发中（成熟度 50-80%）
-
-### UltraPlan + UltraThink
-
-- **UltraPlan**: 扩展计划生成，含选择对话框
-- **UltraThink**: 深度推理模式
-- **Torch**: 推理增强（可能与 UltraThink 互补）
-
-**预测**: 这三者可能合并为一个"深度思考"模式，类似 o1/o3 的竞品。
-
-### Buddy — AI 精灵伙伴
-
-- 45K 字节的 CompanionSprite 动画系统
-- 通知系统
-- 伙伴人格
-
-**预测**: 可能作为桌面应用的差异化功能发布，但优先级可能低于核心功能。
-
-### Web Browser Tool
-
-- MCP 工具形式的内嵌浏览器
-- 面板 UI
-
-**预测**: 对于需要浏览文档/网页的开发任务，这是刚需。
+**判断依据**: 跨平台原生二进制已编译完成（arm64/x64 × darwin/linux/win32），说明已过工程验证阶段。
 
 ---
 
-## Tier 3: 实验阶段（成熟度 30-50%）
+## Tier 2: 积极开发（引用 15-50 文件）
 
 ### Coordinator Mode — 多智能体协调
 
-目前只有 1 个文件 (`src/coordinator/`)，但:
-- 已有专用 system prompt（优先级 1）
-- 可通过环境变量启用
-- 支持多 Worker 分配
-
-**预测**: 这是向"AI 开发团队"演进的基础，但距离公开发布还需要时间。
-
-### Agent Triggers — 自动化代理
-
-- 定时执行（cron 调度）
-- 远程触发
-- 与 KAIROS 深度集成
-
-**预测**: 将成为 CI/CD 集成的关键能力。
-
-### Memory System — 记忆系统增强
-
-| 功能 | 说明 |
+| 指标 | 数据 |
 |------|------|
-| Extract Memories | 自动从对话中提取记忆 |
-| Agent Memory Snapshot | 代理级记忆快照 |
-| Team Memory Sync | 团队记忆同步 |
-| Templates | 任务模板和分类 |
+| 跨文件引用 | **45 个文件** |
+| 专属模块 | `src/coordinator/` (1 文件, 369 行) |
+| 环境变量 | `CLAUDE_CODE_COORDINATOR_MODE` |
+| System Prompt | 专用 prompt（优先级 1，高于默认） |
 
-**预测**: 记忆系统将从"用户手动管理"演进到"AI 自动学习"。
+**判断依据**: 45 个引用 + 专用 system prompt 说明框架已搭建，但专属代码量小，核心逻辑可能尚在内部 monorepo。
+
+### UltraPlan + UltraThink + Torch
+
+- **UltraPlan**: 扩展计划生成，含选择对话框
+- **UltraThink**: 深度推理模式
+- **Torch**: 推理增强
+
+这三者在 `src/commands.ts` 中各有独立命令注册，可能在未来合并为统一的"深度思考"模式。
+
+---
+
+## Tier 3: 早期实验（引用 < 15 文件，专属代码量小）
+
+### Buddy — AI 精灵伙伴
+
+| 指标 | 数据 |
+|------|------|
+| 跨文件引用 | **14 个文件** |
+| 专属模块 | `src/buddy/` (6 文件, 1,298 行) |
+| 核心组件 | CompanionSprite (514行动画), Companion (133行逻辑), useBuddyNotification |
+
+**判断依据**: 专属代码量可观（1,298 行），但跨文件引用少，说明尚未深度集成到核心流程。
+
+### 其他实验性功能
+
+| 功能 | 专属代码 | 说明 |
+|------|---------|------|
+| Agent Triggers | 分散在 tasks/ | 定时代理任务（cron 调度） |
+| Memory Extract | feature flag 门控 | 自动从对话提取记忆 |
+| Agent Memory Snapshot | feature flag 门控 | 代理级记忆快照 |
+| Templates | feature flag 门控 | 任务模板和分类系统 |
+| Web Browser Tool | 0 个专属文件 | MCP 工具形式，可能完全在内部 monorepo |
 
 ---
 
 ## Tier 4: 108 个缺失模块
 
-npm 发布版中有 108 个模块被 dead-code-eliminated，只存在于 Anthropic 内部 monorepo:
+npm 发布版中有约 108 个模块被 dead-code-eliminated，只存在于 Anthropic 内部 monorepo:
 
 | 类别 | 包含 |
 |------|------|
@@ -136,21 +109,21 @@ npm 发布版中有 108 个模块被 dead-code-eliminated，只存在于 Anthrop
 
 ---
 
-## 发展方向预测
+## 发展方向推测
 
-### 短期（1-3 个月）
+### 短期
 
-1. **Voice Mode 公开发布** — 跨平台二进制已就绪
-2. **UltraThink/UltraPlan 合并** — 深度推理模式
+1. **Voice Mode 公开发布** — 跨平台二进制已就绪，38 个文件引用
+2. **UltraThink/UltraPlan** — 深度推理模式
 3. **Web Browser Tool** — MCP 集成
 
-### 中期（3-6 个月）
+### 中期
 
-4. **KAIROS 逐步开放** — 从 Enterprise 到全量
+4. **KAIROS 逐步开放** — 210 个文件引用表明已深度集成
 5. **Agent Triggers** — CI/CD 自动化
 6. **Coordinator Mode** — 多代理协作
 
-### 长期（6-12 个月）
+### 长期
 
 7. **AI 开发团队** — Coordinator + KAIROS + Memory
 8. **自主开发循环** — Agent 自主发现问题 → 修复 → 验证
@@ -162,11 +135,12 @@ npm 发布版中有 108 个模块被 dead-code-eliminated，只存在于 Anthrop
 
 | 功能 | Claude Code | Cursor | Cline |
 |------|------------|--------|-------|
-| 自主代理 (KAIROS) | 开发中 | 无 | 无 |
-| 语音交互 | 开发中 | 无 | 无 |
-| 多代理协调 | 实验中 | 无 | 无 |
-| AI 伙伴 | 实验中 | 无 | 无 |
-| 深度推理 | 开发中 | 部分 | 无 |
-| 网页浏览 | 开发中 | 无 | 无 |
+| 自主代理 (KAIROS) | 210 文件引用 | 无 | 无 |
+| 语音交互 | 跨平台二进制就绪 | 无 | 无 |
+| 多代理协调 | 45 文件引用 | 无 | 无 |
+| AI 伙伴 | 1,298 行专属代码 | 无 | 无 |
+| 深度推理 | 独立命令注册 | 部分 | 无 |
 
-**结论**: Claude Code 正在从"AI 编码助手"向"AI 开发平台"演进，其功能规划远超当前竞品。
+**结论**: Claude Code 正在从"AI 编码助手"向"AI 开发平台"演进，其功能规划在代码层面远超当前竞品。
+
+> **注意**: 以上时间线为基于代码证据的推测，非 Anthropic 官方路线图。实际发布节奏取决于内部优先级和质量标准。

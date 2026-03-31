@@ -1,128 +1,101 @@
 # Future Roadmap
 
-> Inferring Claude Code's development direction from 87 feature flags and missing modules.
+> Inferring Claude Code's development direction from 87 feature flags and missing modules. All assessments are based on verifiable metrics such as code volume and cross-file reference counts.
 
 ---
 
-## Feature Maturity Map
+## Feature Maturity Assessment Method
 
-```mermaid
-quadrantChart
-    title Feature Maturity vs User Value
-    x-axis Low Maturity --> High Maturity
-    y-axis Low Value --> High Value
-    quadrant-1 Near Release
-    quadrant-2 Long-term Vision
-    quadrant-3 Internal Tools
-    quadrant-4 Already in Use
+This document uses the following verifiable metrics to assess feature maturity, rather than subjective percentages:
 
-    KAIROS: [0.85, 0.9]
-    Voice Mode: [0.75, 0.7]
-    Buddy: [0.65, 0.5]
-    UltraPlan: [0.6, 0.8]
-    UltraThink: [0.6, 0.85]
-    Web Browser: [0.55, 0.7]
-    Coordinator: [0.45, 0.8]
-    Agent Triggers: [0.4, 0.75]
-    Torch: [0.5, 0.6]
-    Memory Extract: [0.35, 0.65]
-    Templates: [0.3, 0.5]
-```
+| Metric | Description |
+|--------|-------------|
+| Dedicated file count | Number of source files in the feature's directory |
+| Lines of code | Code volume of dedicated modules |
+| Cross-file reference count | Number of other files that reference the feature |
+| Infrastructure evidence | Whether cross-platform binaries, config schemas, GrowthBook gates, etc. exist |
 
 ---
 
-## Tier 1: Near Release (Maturity 80%+)
+## Tier 1: Deep Integration (100+ file references)
 
-### KAIROS -- Autonomous Assistant Platform
+### KAIROS — Autonomous Assistant Platform
 
 **This is Claude Code's largest unreleased feature.**
 
-| Subsystem | Description | Maturity |
-|-----------|-------------|----------|
-| Assistant Mode | Assistant interaction mode | 95% |
-| Brief Tool | Message checkpoints/briefings | 90% |
-| Channels | Channel system (MCP integration) | 85% |
-| Cron Tasks | Scheduled task scheduling | 85% |
-| GitHub Webhooks | PR subscriptions and notifications | 80% |
-| Push Notifications | Push notifications | 75% |
-| Dream | Memory consolidation (offline learning) | 70% |
+| Metric | Data |
+|--------|------|
+| Cross-file references | **210 files** (highest in the entire codebase) |
+| Dedicated modules | `src/assistant/`, `src/tools/BriefTool/` |
+| Lines of code | 597 dedicated lines + extensively distributed across other modules |
+| GrowthBook gates | `tengu_kairos`, `tengu_kairos_cron_config`, `tengu_kairos_brief` |
+| Subsystems | Assistant Mode, Brief Tool, Channels, Cron Tasks, GitHub Webhooks, Push Notifications, Dream |
 
-**Prediction**: KAIROS will be the core of Claude Code's transformation from a "coding tool" to an "autonomous development partner."
+**Rationale**: 210 file references means KAIROS is deeply embedded in the core architecture — not an isolated experiment.
 
-### Voice Mode -- Voice Interaction
+### Voice Mode — Voice Interaction
 
-| Component | Description |
-|-----------|-------------|
-| Voice STT | Speech-to-text |
-| Audio Capture | Native audio capture (cross-platform .node modules) |
-| Voice Integration Hook | React integration |
+| Metric | Data |
+|--------|------|
+| Cross-file references | **38 files** |
+| Dedicated modules | `src/voice/` |
+| Cross-platform binaries | `vendor/audio-capture/` contains .node files for 6 platforms |
+| Components | voiceStreamSTT, useVoiceIntegration |
 
-**Evidence**: `vendor/audio-capture/` contains native binaries for 6 platforms (arm64/x64 x darwin/linux/win32), indicating it has entered the cross-platform testing phase.
+**Rationale**: Cross-platform native binaries are already compiled (arm64/x64 × darwin/linux/win32), indicating it has passed the engineering validation phase.
 
 ---
 
-## Tier 2: Active Development (Maturity 50-80%)
+## Tier 2: Active Development (15-50 file references)
 
-### UltraPlan + UltraThink
+### Coordinator Mode — Multi-Agent Coordination
+
+| Metric | Data |
+|--------|------|
+| Cross-file references | **45 files** |
+| Dedicated modules | `src/coordinator/` (1 file, 369 lines) |
+| Environment variable | `CLAUDE_CODE_COORDINATOR_MODE` |
+| System Prompt | Dedicated prompt (priority 1, higher than default) |
+
+**Rationale**: 45 references + a dedicated system prompt indicate the framework is in place, but the small dedicated code volume suggests core logic may still reside in the internal monorepo.
+
+### UltraPlan + UltraThink + Torch
 
 - **UltraPlan**: Extended plan generation with selection dialogs
 - **UltraThink**: Deep reasoning mode
-- **Torch**: Reasoning enhancement (may complement UltraThink)
+- **Torch**: Reasoning enhancement
 
-**Prediction**: These three may merge into a single "deep thinking" mode, comparable to o1/o3 competitors.
-
-### Buddy -- AI Companion Sprite
-
-- 45K bytes of CompanionSprite animation system
-- Notification system
-- Companion personality
-
-**Prediction**: May be released as a differentiating feature for the desktop application, but likely lower priority than core features.
-
-### Web Browser Tool
-
-- Embedded browser in MCP tool format
-- Panel UI
-
-**Prediction**: This is a must-have for development tasks that require browsing documentation/web pages.
+All three have independent command registrations in `src/commands.ts` and may merge into a unified "deep thinking" mode in the future.
 
 ---
 
-## Tier 3: Experimental Stage (Maturity 30-50%)
+## Tier 3: Early Experiments (< 15 file references, small dedicated code volume)
 
-### Coordinator Mode -- Multi-Agent Coordination
+### Buddy — AI Companion Sprite
 
-Currently only 1 file (`src/coordinator/`), but:
-- Already has a dedicated system prompt (priority 1)
-- Can be enabled via environment variable
-- Supports multi-worker allocation
+| Metric | Data |
+|--------|------|
+| Cross-file references | **14 files** |
+| Dedicated modules | `src/buddy/` (6 files, 1,298 lines) |
+| Core components | CompanionSprite (514 lines of animation), Companion (133 lines of logic), useBuddyNotification |
 
-**Prediction**: This is the foundation for evolving toward an "AI development team," but still needs time before public release.
+**Rationale**: The dedicated code volume is substantial (1,298 lines), but the low cross-file reference count indicates it has not yet been deeply integrated into core workflows.
 
-### Agent Triggers -- Automated Agents
+### Other Experimental Features
 
-- Scheduled execution (cron scheduling)
-- Remote triggering
-- Deep integration with KAIROS
-
-**Prediction**: Will become a key capability for CI/CD integration.
-
-### Memory System -- Enhanced Memory
-
-| Feature | Description |
-|---------|-------------|
-| Extract Memories | Automatically extract memories from conversations |
-| Agent Memory Snapshot | Agent-level memory snapshots |
-| Team Memory Sync | Team memory synchronization |
-| Templates | Task templates and categorization |
-
-**Prediction**: The memory system will evolve from "user-managed manually" to "AI learns automatically."
+| Feature | Dedicated Code | Description |
+|---------|---------------|-------------|
+| Agent Triggers | Distributed across tasks/ | Scheduled agent tasks (cron scheduling) |
+| Memory Extract | Feature flag gated | Automatically extract memories from conversations |
+| Agent Memory Snapshot | Feature flag gated | Agent-level memory snapshots |
+| Templates | Feature flag gated | Task templates and categorization system |
+| Web Browser Tool | 0 dedicated files | MCP tool format, likely entirely in the internal monorepo |
 
 ---
 
 ## Tier 4: 108 Missing Modules
 
-The npm published version has 108 modules eliminated by dead-code-elimination, existing only in Anthropic's internal monorepo:
+The npm published version has approximately 108 modules eliminated by dead-code-elimination, existing only in Anthropic's internal monorepo:
 
 | Category | Includes |
 |----------|----------|
@@ -138,23 +111,23 @@ The npm published version has 108 modules eliminated by dead-code-elimination, e
 
 ## Development Direction Predictions
 
-### Short-term (1-3 months)
+### Short-term
 
-1. **Voice Mode public release** -- Cross-platform binaries are ready
-2. **UltraThink/UltraPlan merge** -- Deep reasoning mode
-3. **Web Browser Tool** -- MCP integration
+1. **Voice Mode public release** — Cross-platform binaries are ready, 38 file references
+2. **UltraThink/UltraPlan** — Deep reasoning mode
+3. **Web Browser Tool** — MCP integration
 
-### Mid-term (3-6 months)
+### Mid-term
 
-4. **KAIROS gradual rollout** -- From Enterprise to general availability
-5. **Agent Triggers** -- CI/CD automation
-6. **Coordinator Mode** -- Multi-agent collaboration
+4. **KAIROS gradual rollout** — 210 file references indicate deep integration
+5. **Agent Triggers** — CI/CD automation
+6. **Coordinator Mode** — Multi-agent collaboration
 
-### Long-term (6-12 months)
+### Long-term
 
-7. **AI Development Team** -- Coordinator + KAIROS + Memory
-8. **Autonomous Development Loop** -- Agent autonomously discovers issues -> fixes -> verifies
-9. **Team Collaboration** -- Multi-person + multi-agent hybrid workflows
+7. **AI Development Team** — Coordinator + KAIROS + Memory
+8. **Autonomous Development Loop** — Agent autonomously discovers issues → fixes → verifies
+9. **Team Collaboration** — Multi-person + multi-agent hybrid workflows
 
 ---
 
@@ -162,11 +135,12 @@ The npm published version has 108 modules eliminated by dead-code-elimination, e
 
 | Feature | Claude Code | Cursor | Cline |
 |---------|------------|--------|-------|
-| Autonomous Agent (KAIROS) | In development | None | None |
-| Voice Interaction | In development | None | None |
-| Multi-agent Coordination | Experimental | None | None |
-| AI Companion | Experimental | None | None |
-| Deep Reasoning | In development | Partial | None |
-| Web Browsing | In development | None | None |
+| Autonomous Agent (KAIROS) | 210 file references | None | None |
+| Voice Interaction | Cross-platform binaries ready | None | None |
+| Multi-agent Coordination | 45 file references | None | None |
+| AI Companion | 1,298 lines of dedicated code | None | None |
+| Deep Reasoning | Independent command registrations | Partial | None |
 
-**Conclusion**: Claude Code is evolving from an "AI coding assistant" to an "AI development platform," with a feature roadmap that far exceeds current competitors.
+**Conclusion**: Claude Code is evolving from an "AI coding assistant" to an "AI development platform," with a feature roadmap that far exceeds current competitors at the code level.
+
+> **Note**: The timelines above are predictions based on code evidence, not an official Anthropic roadmap. Actual release cadence depends on internal priorities and quality standards.
