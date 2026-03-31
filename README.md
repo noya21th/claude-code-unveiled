@@ -1,12 +1,12 @@
 # Claude Code Unveiled
 
-**The first architecture deep-dive, hidden feature catalog, and cost optimization guide for Claude Code — based on v2.1.88 source analysis (512K lines of TypeScript).**
+**The first architecture deep-dive, hidden feature catalog, and cost optimization guide for Claude Code — based on v2.1.88 source analysis (1,884 files, 132K lines of TypeScript).**
 
 [中文版](README_CN.md) | English
 
 ---
 
-> On March 31, 2026, Claude Code's source was exposed through an unstripped `.map` file in the npm package. This project extracts **actionable insights** — architecture patterns, hidden features, cost optimization, and best practices — all with source file references.
+> On March 31, 2026, Claude Code's TypeScript source (1,884 files, ~132K lines) was exposed through an unstripped `.map` file in the npm package. This repository includes the **complete restored source code** in `src/` plus original analysis. This project extracts **actionable insights** — architecture patterns, hidden features, cost optimization, and best practices — all with source file references.
 
 ## Table of Contents
 
